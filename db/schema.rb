@@ -10,12 +10,44 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_18_045537) do
+ActiveRecord::Schema.define(version: 2019_04_12_185122) do
+
+  create_table "favorites", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "page_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_id"], name: "index_favorites_on_page_id"
+    t.index ["user_id", "page_id"], name: "index_favorites_on_user_id_and_page_id", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
 
   create_table "jwt_blacklist", force: :cascade do |t|
     t.string "jti", null: false
     t.datetime "exp", null: false
     t.index ["jti"], name: "index_jwt_blacklist_on_jti"
+  end
+
+  create_table "page_topics", force: :cascade do |t|
+    t.integer "page_id"
+    t.integer "topic_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_id", "topic_id"], name: "index_page_topics_on_page_id_and_topic_id", unique: true
+    t.index ["page_id"], name: "index_page_topics_on_page_id"
+    t.index ["topic_id"], name: "index_page_topics_on_topic_id"
+  end
+
+  create_table "pages", force: :cascade do |t|
+    t.string "title"
+    t.string "slug"
+    t.text "content"
+    t.boolean "is_published", default: false
+    t.boolean "is_public", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["is_published"], name: "index_pages_on_is_published"
+    t.index ["slug"], name: "index_pages_on_slug"
   end
 
   create_table "resources", force: :cascade do |t|
@@ -32,6 +64,20 @@ ActiveRecord::Schema.define(version: 2019_01_18_045537) do
     t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
     t.index ["name"], name: "index_roles_on_name"
     t.index ["resource_type", "resource_id"], name: "index_roles_on_resource_type_and_resource_id"
+  end
+
+  create_table "topics", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "slug"
+    t.string "description"
+    t.string "ancestry"
+    t.integer "ancestry_depth", default: 0
+    t.integer "visible_to", default: 0
+    t.integer "editable_by", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ancestry"], name: "index_topics_on_ancestry"
+    t.index ["slug"], name: "index_topics_on_slug"
   end
 
   create_table "users", force: :cascade do |t|
